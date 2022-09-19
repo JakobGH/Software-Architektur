@@ -2,22 +2,23 @@ package de.hsw.server;
 
 import de.hsw.shared.IChatRoom;
 import de.hsw.shared.IChatter;
+import de.hsw.shared.MyBufferedReader;
+import de.hsw.shared.MyPrintWriter;
 
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatRoomServerProxy {
+public class ChatRoomServerProxy implements Runnable {
 
     private boolean isRunning = true;
     private final BufferedReader reader;
     private final BufferedWriter writer;
     private final IChatRoom chatRoom;
-
     private final Map<String, IChatter> alreadyDeserializedChatters;
+
 
     public ChatRoomServerProxy(BufferedReader reader, BufferedWriter writer, IChatRoom chatRoom) {
         this.reader = reader;
@@ -26,6 +27,7 @@ public class ChatRoomServerProxy {
         alreadyDeserializedChatters = new HashMap<>();
     }
 
+    @Override
     public void run() {
         while (isRunning) {
 
@@ -72,17 +74,26 @@ public class ChatRoomServerProxy {
 
     private IChatter getChatterFromResponse() {
         writeMessage("Provide identifier");
-
         String identifierResponse = readLine();
+
         if (alreadyDeserializedChatters.containsKey(identifierResponse)) {
             return alreadyDeserializedChatters.get(identifierResponse);
         }
 
-        writeMessage("Provide username");
-        String usernameResponse = readLine();
-        IChatter chatterMock = new ChatterMock(usernameResponse);
-        alreadyDeserializedChatters.put(identifierResponse, chatterMock);
-        return chatterMock;
+        writeMessage("Gib Port alder");
+        try {
+            int port = Integer.parseInt(readLine());
+            Socket socket = new Socket("localhost", port); //TODO: Ip mitliefern
+            MyBufferedReader myBufferedReader = new MyBufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream())));
+            MyPrintWriter myPrintWriter = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
+            ChatterClientProxy chatterClientProxy = new ChatterClientProxy(myBufferedReader, myPrintWriter);
+            alreadyDeserializedChatters.put(identifierResponse, chatterClientProxy);
+            writeMessage("Provide username");
+            String usernameResponse = readLine();
+            return alreadyDeserializedChatters.get(identifierResponse);
+        } catch (NumberFormatException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void write() {
