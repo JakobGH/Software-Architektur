@@ -14,15 +14,21 @@ import java.util.Map;
 public class ChatRoomServerProxy implements Runnable {
 
     private boolean isRunning = true;
-    private final BufferedReader reader;
-    private final BufferedWriter writer;
+    private final MyBufferedReader reader;
+    private final MyPrintWriter writer;
     private final IChatRoom chatRoom;
     private final Map<String, IChatter> alreadyDeserializedChatters;
+    private final Socket socket;
 
 
-    public ChatRoomServerProxy(BufferedReader reader, BufferedWriter writer, IChatRoom chatRoom) {
-        this.reader = reader;
-        this.writer = writer;
+    public ChatRoomServerProxy(Socket socket, IChatRoom chatRoom) {
+        try {
+            this.socket = socket;
+            reader = new MyBufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.chatRoom = chatRoom;
         alreadyDeserializedChatters = new HashMap<>();
     }
@@ -45,12 +51,8 @@ public class ChatRoomServerProxy implements Runnable {
     }
 
     private void writeMessage(String message) {
-        try {
-            writer.write(message + "\n");
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        writer.write(message + "\n");
+        writer.flush();
     }
 
     private String readLine() {
@@ -83,7 +85,7 @@ public class ChatRoomServerProxy implements Runnable {
         writeMessage("Gib Port alder");
         try {
             int port = Integer.parseInt(readLine());
-            Socket socket = new Socket("localhost", port); //TODO: Ip mitliefern
+            Socket socket = new Socket(this.socket.getInetAddress(), port);
             MyBufferedReader myBufferedReader = new MyBufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream())));
             MyPrintWriter myPrintWriter = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
             ChatterClientProxy chatterClientProxy = new ChatterClientProxy(myBufferedReader, myPrintWriter);

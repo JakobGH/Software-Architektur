@@ -13,6 +13,6 @@ public class MyPrintWriter extends PrintWriter {
     public void println(String x) {
         super.println(x);
         super.flush();
-        System.out.printf("Write: %s%n", x);
+        //System.out.printf("Write: %s%n", x);
     }
 }

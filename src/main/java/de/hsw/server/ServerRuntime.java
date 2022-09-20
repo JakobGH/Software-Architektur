@@ -20,9 +20,8 @@ public class ServerRuntime {
         do {
             try {
                 Socket clientSocket = serverSocket.accept();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                BufferedWriter writer = new BufferedWriter(new PrintWriter(clientSocket.getOutputStream()));
-                ChatRoomServerProxy chatRoomServerProxy = new ChatRoomServerProxy(reader, writer, chatRoom); //TODO: In Liste packen
+
+                ChatRoomServerProxy chatRoomServerProxy = new ChatRoomServerProxy(clientSocket, chatRoom); //TODO: In Liste packen
                 Thread t = new Thread(chatRoomServerProxy);
                 t.start();
 

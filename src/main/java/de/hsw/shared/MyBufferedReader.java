@@ -13,7 +13,7 @@ public class MyBufferedReader extends BufferedReader {
     @Override
     public String readLine() throws IOException {
         String input = super.readLine();
-        System.out.printf("Read: %s%n", input);
+        //System.out.printf("Read: %s%n", input);
         return input;
     }
 }
