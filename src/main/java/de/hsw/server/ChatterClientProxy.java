@@ -47,4 +47,14 @@ public class ChatterClientProxy implements IChatter {
             throw new RuntimeException(e);
         }
     }
+
+    public void technicalDisconnect() {
+        try {
+            reader.readLine();
+            writer.println("2");
+            reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

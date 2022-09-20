@@ -20,13 +20,16 @@ public class ClientRuntime {
             MyBufferedReader reader = new MyBufferedReader(new InputStreamReader(socket.getInputStream()));
             MyPrintWriter writer = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
             ChatRoomClientProxy chatRoomClientProxy = new ChatRoomClientProxy(reader, writer);
-            ChatterMock gandalf = new ChatterMock("Frodo");
+            ChatterMock gandalf = new ChatterMock("Jakob");
             chatRoomClientProxy.joinRoom(gandalf);
             Scanner sc = new Scanner(System.in);
             String input = "";
-            while(!input.equals("Ende")) {
+            while(true) {
                 System.out.println("Gib eine Nachricht ein. Zum Beenden 'Ende' eingeben: ");
                 input = sc.nextLine();
+                if(input.equals("Ende")) {
+                    break;
+                }
                 chatRoomClientProxy.writeMessage(gandalf, input);
             }
             chatRoomClientProxy.leave(gandalf);

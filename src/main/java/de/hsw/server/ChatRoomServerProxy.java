@@ -127,6 +127,9 @@ public class ChatRoomServerProxy implements Runnable {
     private void technicalDisconnect() {
         writeMessage("Closing connection now");
         isRunning = false;
+        for(Map.Entry<String, IChatter> entry : alreadyDeserializedChatters.entrySet()) {
+            ((ChatterClientProxy) entry.getValue()).technicalDisconnect();
+        }
     }
 
     private void error() {

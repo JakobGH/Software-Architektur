@@ -98,7 +98,7 @@ public class ChatRoomClientProxy implements IChatRoom {
     private void readProtocol() {
         try {
             String protocol = reader.readLine();
-            System.out.printf("Protocol: " + protocol);
+            //System.out.printf("Protocol: " + protocol);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
