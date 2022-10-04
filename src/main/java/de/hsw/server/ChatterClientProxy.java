@@ -28,7 +28,9 @@ public class ChatterClientProxy implements IChatter {
             }
             throw new RuntimeException(reader.readLine());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return "Unknown";
+            //throw new RuntimeException(e);
         }
     }
 
@@ -40,11 +42,15 @@ public class ChatterClientProxy implements IChatter {
             reader.readLine();
             writer.println(message);
             String serverResponse = reader.readLine();
+            if(serverResponse == null) {
+                return;
+            }
             if (!serverResponse.equals("1")) {
-                throw new RuntimeException(reader.readLine());
+                throw new RuntimeException(1 + reader.readLine());
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
+            //throw new RuntimeException(e);
         }
     }
 
@@ -54,7 +60,8 @@ public class ChatterClientProxy implements IChatter {
             writer.println("2");
             reader.readLine();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            //throw new RuntimeException(e);
         }
     }
 }

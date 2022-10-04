@@ -24,7 +24,7 @@ public class ChatRoomServerProxy implements Runnable {
     public ChatRoomServerProxy(Socket socket, IChatRoom chatRoom) {
         try {
             this.socket = socket;
-            reader = new MyBufferedReader(new InputStreamReader(socket.getInputStream()));
+            reader = new MyBufferedReader(socket);
             writer = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -59,6 +59,8 @@ public class ChatRoomServerProxy implements Runnable {
         try {
             return reader.readLine();
         } catch (IOException e) {
+            System.err.println(socket.getInetAddress() + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -86,7 +88,7 @@ public class ChatRoomServerProxy implements Runnable {
         try {
             int port = Integer.parseInt(readLine());
             Socket socket = new Socket(this.socket.getInetAddress(), port);
-            MyBufferedReader myBufferedReader = new MyBufferedReader(new InputStreamReader(new BufferedInputStream(socket.getInputStream())));
+            MyBufferedReader myBufferedReader = new MyBufferedReader(socket);
             MyPrintWriter myPrintWriter = new MyPrintWriter(new PrintWriter(socket.getOutputStream()));
             ChatterClientProxy chatterClientProxy = new ChatterClientProxy(myBufferedReader, myPrintWriter);
             alreadyDeserializedChatters.put(identifierResponse, chatterClientProxy);

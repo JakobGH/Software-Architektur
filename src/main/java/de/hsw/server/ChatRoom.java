@@ -15,7 +15,7 @@ public class ChatRoom implements IChatRoom {
     }
 
     @Override
-    public void joinRoom(IChatter chatter) {
+    public synchronized void joinRoom(IChatter chatter) {
         if (currentChatters.contains(chatter)) {
             throw new RuntimeException("User is already in this chatroom!");
         }
@@ -24,7 +24,7 @@ public class ChatRoom implements IChatRoom {
     }
 
     @Override
-    public void writeMessage(IChatter chatter, String message) {
+    public synchronized void writeMessage(IChatter chatter, String message) {
         currentChatters.forEach(c -> {
             if (!c.equals(chatter)) {
                 c.receiveMessage(chatter.getUsername() + ": " + message);
@@ -35,7 +35,7 @@ public class ChatRoom implements IChatRoom {
     }
 
     @Override
-    public void leave(IChatter chatter) {
+    public synchronized void leave(IChatter chatter) {
         currentChatters.remove(chatter);
         writeMessage(chatter, "Left the chat");
     }

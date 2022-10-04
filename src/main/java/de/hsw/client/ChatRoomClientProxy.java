@@ -75,7 +75,7 @@ public class ChatRoomClientProxy implements IChatRoom {
                 writer.println(String.valueOf(localPort));
                 Socket accept = socket.accept();
                 MyPrintWriter myPrintWriter = new MyPrintWriter(new PrintWriter(accept.getOutputStream()));
-                MyBufferedReader myBufferedReader = new MyBufferedReader(new BufferedReader(new InputStreamReader(accept.getInputStream())));
+                MyBufferedReader myBufferedReader = new MyBufferedReader(accept);
                 Thread fred = new Thread(new ChatterServerProxy(chatter, myBufferedReader, myPrintWriter));
                 fred.start();
             } catch (IOException e) {
